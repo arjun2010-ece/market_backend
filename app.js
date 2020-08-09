@@ -15,8 +15,7 @@ const port = process.env.port || 8002;
 
 const signup = require("./routes/auth");
 
-//routes
-app.use("/api", signup);
+
 
 //db connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -37,6 +36,14 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+app.use(function(err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({ error: 'Unauthorized!' });
+    }
+});
+
+//routes
+app.use("/api", signup);
 
 app.listen(port,function() {
     console.log("Server connected on port ", port);

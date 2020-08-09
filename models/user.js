@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 
 const uuidv1 = require("uuidv1");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 
 
 
@@ -17,7 +18,6 @@ var userSchema = new mongoose.Schema({
  hashed_password: {
     type: String,
     required: true,
-    maxlength: 32
 },
 name: {
     type: String,
@@ -41,21 +41,31 @@ history: {
 
 
 userSchema.virtual('password').set(function(pwd) {
-    this.salt = uuidv1();
+    // this.salt = uuidv1();
+    // console.log("SKSKSKKS");
+    // console.log(this.encryptPassword(pwd));
     this.hashed_password = this.encryptPassword(pwd);    
 });
 
 userSchema.methods = {
+    authenticate: function(plainText){
+        return bcrypt.compareSync(plainText,  this.hashed_password);
+    },
     encryptPassword: function(pwd){
         if(!pwd){
             return "";
         }
         try {
-            return crypto.createHmac("sha256", this.salt).update(pwd).digest("hex");
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(pwd, salt);
+            return hash;
         } catch (error) {
             return "";
         }
     }
 }
 
+// bcrypt.hash(yourPassword, salt, (err, hash) => {
+//     // Now we can store the password hash in db.
+// });
  module.exports = mongoose.model("User", userSchema);
