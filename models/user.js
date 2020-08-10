@@ -1,11 +1,6 @@
 //Require Mongoose
 var mongoose = require('mongoose');
-
-const uuidv1 = require("uuidv1");
-const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-
-
 
 //Define a schema
 var userSchema = new mongoose.Schema({
@@ -24,7 +19,6 @@ name: {
     trim: true,
     maxlength: 32
 },
-salt: String,
 about: {
     type: String,
     trim: true,
@@ -41,9 +35,6 @@ history: {
 
 
 userSchema.virtual('password').set(function(pwd) {
-    // this.salt = uuidv1();
-    // console.log("SKSKSKKS");
-    // console.log(this.encryptPassword(pwd));
     this.hashed_password = this.encryptPassword(pwd);    
 });
 
@@ -65,7 +56,4 @@ userSchema.methods = {
     }
 }
 
-// bcrypt.hash(yourPassword, salt, (err, hash) => {
-//     // Now we can store the password hash in db.
-// });
  module.exports = mongoose.model("User", userSchema);

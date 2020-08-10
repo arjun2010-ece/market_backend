@@ -30,8 +30,8 @@ exports.signin = function(req, res) {
         return res.status(400).json({ error: "Email and password does not match." });
     }
 
-    const token = jwt.sign({ _id : user._id}, process.env.JWT_SECRET);
-    res.cookie("t", token, { expiry: 1800});
+    const token = jwt.sign({ _id : user._id}, process.env.JWT_SECRET, {expiresIn: "20000"});
+    res.cookie("t", token, { maxAge: 1000000});
     const {_id, name, email, role} = user;
     return res.status(200).json({
         token,_id,name, role,email
@@ -52,3 +52,9 @@ exports.requireSignIn = expressJwt({
     userProperty: 'auth',
     algorithms: ['HS256']
 });
+
+exports.checkarjun = function(req, res) {
+    return res.status(200).json({
+                message: "Protected  route successfully."
+            });
+}

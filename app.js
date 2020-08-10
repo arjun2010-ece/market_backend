@@ -36,14 +36,18 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.use(function(err, req, res, next) {
-    if (err.name === 'UnauthorizedError') {
-        res.status(401).json({ error: 'Unauthorized!' });
-    }
-});
+
 
 //routes
 app.use("/api", signup);
+
+//for token expiration custom message
+// put before routes.
+app.use(function(err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        return res.status(401).json({ error: 'Oops! Token expired.' });
+    }
+});
 
 app.listen(port,function() {
     console.log("Server connected on port ", port);
